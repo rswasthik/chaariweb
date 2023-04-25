@@ -66,7 +66,7 @@ const Navbar2 = () => {
                 </Link>
               </li>
               <li>
-                <Link href="/Notes">
+                <Link href="#">
                   <pa className="inline-flex  px-4 py-2  text-white font-bold items-center justify-center hover:scale-125 hover:text-gray-300 transition-all">
                     {" "}
                     View Video

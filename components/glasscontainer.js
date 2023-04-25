@@ -5,14 +5,19 @@ import classes from "./glassContainer.module.css";
 const glassContainer = (props) => {
   return (
     <div style={{ zIndex: "-1" }} className={classes.upperLayer}>
-      REVA University is a private university[1] in Kattigenahalli, Yelahanka,
-      Bangalore. It was established under the Government of Karnataka Act, 2012.
-      It is managed by the Rukmini Educational Charitable Trust.[2] The
-      university currently offers UG, PG and several certificate/diploma level
-      programs in engineering, architecture, science & technology, commerce,
-      management, law, & arts. The university also facilitates research leading
-      to doctoral degrees in all disciplines. Dr. P. Shyama Raju is chancellor
-      of the university
+      One of the most crucial things you can do for your health is to exercise
+      regularly. Physical activity can strengthen your bones and muscles, help
+      you maintain a healthy weight, increase your ability to carry out daily
+      tasks, and improve your cognitive health. Fitness is often described as
+      both an art and a science. Many people accept the scientific explanation
+      since there is a link between the strength and stamina required to engage
+      in fitness activities. The relationship between fitness and ageing, the
+      relationship between the brain and body, and a person's quality of life
+      has a real scientific foundation. Here, we'll explore how fitness might be
+      compared to the arts and how they relate to one another. We will also
+      understand fitness and art are connected. This app is based on nuances of
+      Indian classical dance, martial arts and folk dances. A better tool, and
+      highly interesting and interactive whole body workout is designed.
     </div>
   );
 };
