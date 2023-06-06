@@ -5,13 +5,14 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { FaFileUpload } from "react-icons/fa";
 import { MdSend } from "react-icons/md";
-
+import MenuItem from "@mui/material/MenuItem";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Navbar2 from "@/components/NavBar";
 import ParticleBackground from "../components/particleBackground";
-
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { app, database, storage } from "@/firebaseConfig";
 export default function Upload() {
   //theme for mui
   const theme = createTheme({
@@ -24,29 +25,124 @@ export default function Upload() {
     },
   });
 
-  const [title, settitle] = useState("");
-  const [Content, setContent] = useState("");
-  const [dop, setDop] = useState("");
-  const [video, setVideo] = useState(null);
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setpdfFile(file);
+  const [traininglevel, settraininglevel] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [trainingLevel, setTrainingLevel] = useState("");
+  const [selectedCourse, setSelectedCourse] = useState("");
+  const handleTrainingLevelChange = (event) => {
+    setTrainingLevel(event.target.value);
+  };
+  const handleCourseChange = (event) => {
+    setSelectedCourse(event.target.value);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const trainingLevelOptions = [
+    "PHYSICAL Wellbeing Beginner",
+    "PHYSICAL Wellbeing Intermediate",
+    "PHYSICAL Wellbeing Advance",
+    "MENTAL Wellbeing",
+    "WOMEN Self care",
+  ];
+  const PHYSICALBeginnerOptions = [
+    "Warm ups – Prāramba Vyāyamā",
+    "Strengthening ",
+    "Balance",
+    "Stretches",
+    "Dancercise",
+    "Meditation/Breathing",
+    "Cool Down exercises",
+  ];
+  const PHYSICALIntermediateOptions = [
+    "Warm ups – Prāramba Vyāyamā",
+    "  Strengthening ",
+    "Balance",
+    "Stretches",
+    "Dancercise",
+    "Meditation/Breathing",
+    "Cool Down exercises",
+  ];
+  const PHYSICALAdvanceOptions = [
+    "Warm ups – Prāramba Vyāyamā",
+    "  Strengthening ",
+    "Balance",
+    "Stretches",
+    "Dancercise",
+    "Meditation/Breathing",
+    "Cool Down exercises",
+  ];
+  const MentalWellbeingOptions = [
+    " Stress management",
+    "Anxiety control",
+    "Depression handling",
+  ];
 
-    try {
-      const docRef = await addDoc(collection(database, "documents"), {
-        title,
-        Content,
-        dop,
-        video,
-      });
+  const WomenselfcareOptions = [
+    " Uterus care",
+    "Menstrual cycle management",
+    "Menopause handling",
+  ];
+  const getCoursesForTrainingLevel = (level) => {
+    switch (level) {
+      case "PHYSICAL Wellbeing Beginner":
+        return PHYSICALBeginnerOptions;
+      case "PHYSICAL Wellbeing Intermediate":
+        return PHYSICALIntermediateOptions;
+      case "PHYSICAL Wellbeing Advance":
+        return PHYSICALAdvanceOptions;
+      case "MENTAL Wellbeing":
+        return MentalWellbeingOptions;
+      case "WOMEN Self care":
+        return WomenselfcareOptions;
+      default:
+        return [];
+    }
+  };
 
-      console.log("Document written with ID: ", docRef.id);
-    } catch (error) {
-      console.error("Error adding document: ", error);
+  const handleFileSelect = (event) => {
+    const file = event.target.files[0];
+    if (file && file.type === "video/mp4") {
+      setSelectedFile(file);
+    } else {
+      setSelectedFile(null);
+    }
+  };
+
+  const handleUpload = () => {
+    if (selectedFile) {
+      setLoading(true);
+
+      const storageRef = ref(storage, `videos/${selectedFile.name}`);
+      uploadBytes(storageRef, selectedFile)
+        .then(() => {
+          getDownloadURL(storageRef)
+            .then((downloadURL) => {
+              database
+                .collection("videos")
+                .add({
+                  trainingLevel: trainingLevel,
+                  course: selectedCourse,
+                  downloadURL: downloadURL,
+                })
+                .then(() => {
+                  setLoading(false);
+                })
+                .catch((error) => {
+                  console.error("Error storing video data:", error);
+                  setLoading(false);
+                });
+            })
+            .catch((error) => {
+              console.error("Error getting download URL:", error);
+              setLoading(false);
+            });
+        })
+        .catch((error) => {
+          console.error("Error uploading file:", error);
+          setLoading(false);
+        });
+      console.log(storageRef);
+      console.log(trainingLevel);
     }
   };
   return (
@@ -70,36 +166,48 @@ export default function Upload() {
 
             <div className="flex flex-col  ">
               <ThemeProvider theme={theme}>
-                <div className="flex flex-col mt-10 mb-10">
-                  <div className="flex flex-col  mb-10">
+                <div className="flex flex-col mt-10 mb-4">
+                  <div className="flex flex-col mb-4">
                     <TextField
-                      id="outlined-basic"
-                      value={title}
-                      sx={{ maxwidth: 500 }}
-                      onChange={(e) => {
-                        settitle(e.target.value);
-                      }}
-                      label="Enter title here"
+                      id="training-level-select"
+                      select
+                      value={trainingLevel}
+                      onChange={handleTrainingLevelChange}
+                      label="Select training level"
                       variant="outlined"
-                    />
+                    >
+                      {trainingLevelOptions.map((option) => (
+                        <MenuItem key={option} value={option}>
+                          {option}
+                        </MenuItem>
+                      ))}
+                    </TextField>
                   </div>
                 </div>
 
-                <div className="flex flex-row gap-6 flex-wrap justify-center">
-                  {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker
-                      label="Select Date"
-                      sx={{ minWidth: 320 }}
-                      onChange={(event, selectedValue) => {
-                        setDop(selectedValue);
-                      }}
-                      renderInput={(params) => (
-                        <TextField {...params} label="Select a Date" />
+                <div className="flex flex-col mt-4 mb-4">
+                  <div className="flex flex-col mb-4">
+                    <TextField
+                      id="course-select"
+                      select
+                      value={selectedCourse}
+                      onChange={handleCourseChange}
+                      label="Select course"
+                      variant="outlined"
+                      disabled={!trainingLevel} // Disable the course selection until a training level is chosen
+                    >
+                      {getCoursesForTrainingLevel(trainingLevel).map(
+                        (option) => (
+                          <MenuItem key={option} value={option}>
+                            {option}
+                          </MenuItem>
+                        )
                       )}
-                    />
-                  </LocalizationProvider> */}
-
-                  <div className="flex flex-col  mb-10">
+                    </TextField>
+                  </div>
+                </div>
+                <div className="flex flex-row gap-6 flex-wrap justify-center">
+                  <div className="flex flex-col mb-10">
                     <label
                       htmlFor="filePicker"
                       className="block font-medium mb-2"
@@ -116,7 +224,7 @@ export default function Upload() {
                           fontSize: "1rem",
                         }}
                       >
-                        Select Video
+                        {selectedFile ? selectedFile.name : "Select Video"}
                         <FaFileUpload
                           fontSize="1.45em"
                           style={{
@@ -130,12 +238,22 @@ export default function Upload() {
                       type="file"
                       id="filePicker"
                       style={{ display: "none" }}
-                      accept=".pdf"
+                      accept="video/mp4"
                       className="py-2 px-4 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                      onChange={handleFileSelect}
                     />
+                    {selectedFile && (
+                      <Button
+                        variant="contained"
+                        disabled={loading}
+                        onClick={handleUpload}
+                        sx={{ mt: 2 }}
+                      >
+                        {loading ? "Uploading..." : "Upload"}
+                      </Button>
+                    )}
                   </div>
                 </div>
-
                 <Button
                   variant="outlined"
                   sx={{

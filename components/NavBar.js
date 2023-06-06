@@ -66,7 +66,7 @@ const Navbar2 = () => {
                 </Link>
               </li>
               <li>
-                <Link href="#">
+                <Link href="/VideoView">
                   <pa className="inline-flex  px-4 py-2  text-white font-bold items-center justify-center hover:scale-125 hover:text-gray-300 transition-all">
                     {" "}
                     View Video
@@ -157,17 +157,10 @@ const Navbar2 = () => {
                         <ListItemIcon>
                           <MdOutlineListAlt fontSize="large" />
                         </ListItemIcon>
-                        Student List
+                        User List
                       </MenuItem>
                     </Link>
-                    {/* <Link href="/addMentor">
-                      <MenuItem sx={{ pr: 4, py: 1.5 }} onClick={handleClose}>
-                        <ListItemIcon>
-                          <MdPersonAddAlt1 fontSize="large" />
-                        </ListItemIcon>
-                        Add Mentor
-                      </MenuItem>
-                    </Link> */}
+
                     <Divider />
                     <Link href="/">
                       <MenuItem onClick={handleClose}>
