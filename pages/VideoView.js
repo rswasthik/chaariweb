@@ -1,6 +1,8 @@
 import { Button, ThemeProvider, createTheme } from "@mui/material";
 import { IoClose } from "react-icons/io5";
-
+import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { ref, deleteObject } from "firebase/storage";
+import { app, database, storage } from "../firebaseConfig";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -47,13 +49,43 @@ export default function VideoView() {
 
   const totalPages = Math.ceil(videos.length / videosPerPage);
 
+  const fetchData = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(database, "formData"));
+      const data = [];
+      querySnapshot.forEach((doc) => {
+        data.push({ id: doc.id, ...doc.data() });
+      });
+      console.log(querySnapshot);
+      setVideos(data);
+    } catch (error) {
+      console.error("Error fetching videos:", error);
+    }
+  };
+  useEffect(() => {
+    fetchData();
+  }, []);
   const handleChangePage = (event, page) => {
     setCurrentPage(page);
   };
-  const handleDeleteVideo = (index) => {
-    const updatedVideos = [...videos];
-    updatedVideos.splice(index, 1);
-    setVideos(updatedVideos);
+  const handleDeleteVideo = async (index) => {
+    const video = videos[index];
+
+    try {
+      // Delete video from storage
+      const storageRef = ref(storage, video.videoURL);
+      await deleteObject(storageRef);
+
+      // Delete video from Firestore
+      const videoDocRef = doc(database, "formData", video.id);
+      await deleteDoc(videoDocRef);
+
+      // Update the videos state
+      const updatedVideos = videos.filter((_, i) => i !== index);
+      setVideos(updatedVideos);
+    } catch (error) {
+      console.error("Error deleting video:", error);
+    }
   };
   const handleOpenModal = (video) => {
     setSelectedVideo(video);
@@ -63,27 +95,6 @@ export default function VideoView() {
     setSelectedVideo(null);
   };
 
-  const generateSampleData = () => {
-    const sampleData = [
-      {
-        slNo: 1,
-        trainingLevel: "PHYSICAL Wellbeing Beginner",
-        selectedCourse: "Warm ups – Prāramba Vyāyamā",
-        video: "https://example.com/video1",
-      },
-      {
-        slNo: 2,
-        trainingLevel: "PHYSICAL Wellbeing Intermediate",
-        selectedCourse: "Stretches",
-        video: "https://example.com/video2",
-      },
-    ];
-    setVideos(sampleData);
-  };
-
-  useEffect(() => {
-    generateSampleData();
-  }, []);
   return (
     <>
       <Head>

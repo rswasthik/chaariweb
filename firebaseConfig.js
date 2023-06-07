@@ -3,12 +3,12 @@ import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCbrTb_SNfBAVpKi3ZfQOf2nuAdml92txU",
-  authDomain: "chaariapp.firebaseapp.com",
-  projectId: "chaariapp",
-  storageBucket: "chaariapp.appspot.com",
-  messagingSenderId: "100964101641",
-  appId: "1:100964101641:web:6b3bf18a9b2ceb35bf52d8",
+  apiKey: "AIzaSyD0iCabEymf3wmcKK28N2ItpA0wxK5F6AA",
+  authDomain: "chaariwebsite.firebaseapp.com",
+  projectId: "chaariwebsite",
+  storageBucket: "chaariwebsite.appspot.com",
+  messagingSenderId: "738454106291",
+  appId: "1:738454106291:web:f83f507429b83ce27100c6",
 };
 
 export const app = initializeApp(firebaseConfig);
